@@ -2,13 +2,14 @@
 </script>
 
 <template>
-  <div>
-    <h2>App</h2>
-    <router-link to="/main">Main</router-link>
-    <router-link to="/login">Login</router-link>
+  <div class="app">
     <router-view></router-view>
   </div>
 </template>
 
-<style scoped>
+<style lang="less" scoped>
+.app {
+  width: 100vw;
+  height: 100vh;
+}
 </style>
