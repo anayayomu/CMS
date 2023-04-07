@@ -4,7 +4,13 @@ import "normalize.css"
 
 import './assets/css/index.less'
 import router from './router'
-import pinia from './store'
 import registerIcon from './global/register-icon'
+import store from './store'
 
-createApp(App).use(router).use(pinia).use(registerIcon).mount('#app')
+const app = createApp(App)
+app.use(registerIcon)
+app.use(store)
+app.use(router)
+
+app.mount('#app')
+

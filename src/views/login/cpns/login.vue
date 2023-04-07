@@ -10,7 +10,7 @@
               <span>账号登录</span>
             </div>
           </template>
-          <pane-account />
+          <pane-account ref="accountRef" />
         </el-tab-pane>
         <el-tab-pane label="手机登录" name="phone">
           <template #label>
@@ -34,16 +34,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import paneAccount from './paneAccount.vue'
+import { ref, watch } from 'vue'
+import PaneAccount from './PaneAccount.vue'
 import panePhone from './panePhone.vue'
+import { local } from '@/utils/cache'
 
 const activeName = ref<string>('account')
-const isKeep = ref<boolean>()
+const isKeep = ref<boolean>(local.getCache('isKeep') ?? false)
+const accountRef = ref<InstanceType<typeof PaneAccount>>()
 
+watch(isKeep, (newValue) => {
+  local.setCache('isKeep', newValue)
+})
 function handlerLogin() {
   if (activeName.value === 'account') {
-    console.log('account')
+    accountRef.value?.loginAction(isKeep.value)
+    // console.log(accountRef.value)
   } else {
     console.log('phone')
   }
