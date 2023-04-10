@@ -1,10 +1,6 @@
 <template>
   <div class="menu">
-    <page-search
-      :search-config="searchConfig"
-      @query-click="handleQueryClick"
-      @reset-click="handleReset"
-    />
+    <page-search @query-click="handleQueryClick" @reset-click="handleReset" />
     <page-content
       ref="contentRef"
       @new-data-click="handleNewData"
@@ -16,11 +12,9 @@
 
 <script setup lang="ts" name="menu">
 import { ref } from 'vue'
-import pageSearch from '@/components/page-search/page-search.vue'
+import pageSearch from './cpns/page-search.vue'
 import PageContent from './cpns/page-content.vue'
 import PageModal from './cpns/page-modal.vue'
-
-import searchConfig from './config/search config'
 
 const contentRef = ref<InstanceType<typeof PageContent>>()
 function handleQueryClick(queryInfo: any) {
