@@ -56,3 +56,24 @@ export function mapPathCrumb(path: string, userMenu: any[]) {
   }
   return breakcrumbs
 }
+
+/**
+ * 菜单映射到id的列表
+ * @param menuList
+*/
+export function mapMenuList(menuList: any[]) {
+  const ids: number[] = []
+
+  function recurseGetId(menus: any[]) {
+    for (const item of menus) {
+      if (item.children) {
+        recurseGetId(item.children)
+      } else {
+        ids.push(item.id)
+      }
+    }
+  }
+  recurseGetId(menuList)
+
+  return ids
+}

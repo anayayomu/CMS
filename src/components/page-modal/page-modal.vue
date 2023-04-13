@@ -34,6 +34,9 @@
                   </template>
                 </el-select>
               </template>
+              <template v-if="item.type === 'custom'">
+                <slot name="item.slotName"></slot>
+              </template>
             </el-form>
           </template>
         </el-form>
@@ -64,6 +67,7 @@ interface IModalProps {
     }
     formItem: any[]
   }
+  otherInfo?: any
 }
 const props = defineProps<IModalProps>()
 
@@ -101,10 +105,18 @@ function setModalDialog(isNew: boolean = true, item?: any) {
 const systemStore = useSystemStore()
 function handleContentData() {
   dialogVisible.value = false
+  let infoData = { ...formData }
+  if (props.otherInfo) {
+    infoData = { ...infoData, ...props.otherInfo }
+  }
   if (!isNewRef.value && editData.value) {
-    systemStore.editPageInfo('department', editData.value.id, formData)
+    systemStore.editPageInfo(
+      props.modalConfig.pageName,
+      editData.value.id,
+      infoData
+    )
   } else {
-    systemStore.newPageData('department', formData)
+    systemStore.newPageData(props.modalConfig.pageName, infoData)
   }
 }
 
