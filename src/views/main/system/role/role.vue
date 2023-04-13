@@ -51,7 +51,10 @@ import useMainStore from '@/store/main/main'
 import { mapMenuList } from '@/utils/mapMenu'
 
 const { contentRef, handleQueryClick, handleReset } = usePageCount()
-const { modalRef, handleEdit, handleNewData } = usePageModal(editCallBack)
+const { modalRef, handleEdit, handleNewData } = usePageModal(
+  newCallBack,
+  editCallBack
+)
 
 const mainStore = useMainStore()
 const { entireMenus } = storeToRefs(mainStore)
@@ -63,6 +66,11 @@ function handleElTree(data: any, item: any) {
 }
 
 const treeRef = ref<InstanceType<typeof ElTree>>()
+function newCallBack() {
+  nextTick(() => {
+    treeRef.value?.setCheckedKeys([])
+  })
+}
 function editCallBack(itemData: any) {
   console.log(itemData)
   nextTick(() => {

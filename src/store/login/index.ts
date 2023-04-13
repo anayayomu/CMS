@@ -3,21 +3,23 @@ import { accountLogin, getUserInfo, getUserMenu } from "@/service/login";
 import { local } from "@/utils/cache";
 // import router from "@/router";
 import { TOKEN } from "@/global/content";
-import { mapMenuRoutes } from "@/utils/mapMenu";
+import { mapMenuListPermission, mapMenuRoutes } from "@/utils/mapMenu";
 import router from "@/router";
 import useMainStore from "../main/main";
 
 interface ILoginState {
   token: string
   userInfo: any,
-  userMenu: any
+  userMenu: any,
+  permission: string[]
 }
 
 const useLoginStore = defineStore('login', {
   state: (): ILoginState => ({
     token: local.getCache(TOKEN) ?? '',
     userInfo: local.getCache('userInfo') ?? {},
-    userMenu: local.getCache('userMenu') ?? {}
+    userMenu: local.getCache('userMenu') ?? {},
+    permission: []
   }),
   actions: {
     async loginData(account: any) {
@@ -38,6 +40,10 @@ const useLoginStore = defineStore('login', {
       const mainStore = useMainStore()
       mainStore.fetchEntireData()
 
+      //按钮权限
+      const permissions = mapMenuListPermission(this.userMenu)
+      this.permission = permissions
+
       const routes = mapMenuRoutes(this.userMenu)
       routes.forEach(route => router.addRoute('main', route))
 
@@ -55,6 +61,10 @@ const useLoginStore = defineStore('login', {
         //刷新后再次请求role和department的数据
         const mainStore = useMainStore()
         mainStore.fetchEntireData()
+
+        //刷新后需要重新调用映射
+        const permissions = mapMenuListPermission(this.userMenu)
+        this.permission = permissions
 
         const routes = mapMenuRoutes(userMenu)
         routes.forEach(route => router.addRoute('main', route))

@@ -2,7 +2,7 @@
   <div class="c-content">
     <div class="header">
       <h3>{{ contentConfig.header?.title ?? 'list' }}</h3>
-      <el-button type="primary" @click="handleNewData">{{
+      <el-button v-if="isCreate" type="primary" @click="handleNewData">{{
         contentConfig.header?.btnTitle ?? 'new Data'
       }}</el-button>
     </div>
@@ -25,6 +25,7 @@
             <el-table-column v-bind="item">
               <template #default="scope">
                 <el-button
+                  v-if="isUpdate"
                   type="primary"
                   text
                   size="small"
@@ -33,6 +34,7 @@
                   >edit</el-button
                 >
                 <el-button
+                  v-if="isDelete"
                   type="danger"
                   text
                   size="small"
@@ -79,6 +81,7 @@ import useSystemStore from '@/store/main/system/user'
 import { storeToRefs } from 'pinia'
 import { formatUTC } from '@/utils/format'
 import { ref } from 'vue'
+import usePermission from '@/hooks/usePermission'
 
 interface IProps {
   contentConfig: {
@@ -96,6 +99,12 @@ const props = defineProps<IProps>()
 
 // 广播事件
 const emit = defineEmits(['newDataClick', 'editData'])
+
+//按钮权限的控制
+const isCreate = usePermission(`${props.contentConfig.pageName}:create`)
+const isUpdate = usePermission(`${props.contentConfig.pageName}:update`)
+const isDelete = usePermission(`${props.contentConfig.pageName}:delete`)
+const isQuery = usePermission(`${props.contentConfig.pageName}:query`)
 
 //初始化，一进入就请求数据
 const systemStore = useSystemStore()
@@ -131,6 +140,8 @@ function handleEdit(item: any) {
 
 // axios function
 function fetchPageList(formData: any = {}) {
+  if (!isQuery) return
+
   const size = pageSize.value
   const offset = (currentPage.value - 1) * size
   const pageInfo = { size, offset }
@@ -139,6 +150,18 @@ function fetchPageList(formData: any = {}) {
   const queryInfo = { ...pageInfo, ...formData }
   systemStore.postPageList(props.contentConfig.pageName, queryInfo)
 }
+
+systemStore.$onAction(({ name, after }) => {
+  after(() => {
+    if (
+      name === 'delPageList' ||
+      name === 'editPageInfo' ||
+      name === 'newPageData'
+    ) {
+      currentPage.value = 1
+    }
+  })
+})
 
 defineExpose({ fetchPageList })
 
